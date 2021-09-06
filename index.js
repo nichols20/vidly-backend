@@ -47,3 +47,24 @@ app.post("/vidly.com/api/genres", (req, res) => {
   //return new genres object to user
   res.send(genres);
 });
+
+app.put("/vidly.com/api/genres/:id", (req, res) => {
+  //Check to see if genre id user is searching for exists
+  const genre = genres.find((g) => g.id === parseInt(req.params.id));
+  //Check to see if the updated genre equals an existing genre name
+  const duplicateGenre = genres.find(
+    (g) => g.genre.toLowerCase() === req.body.genre.toLowerCase()
+  );
+  //If genre doesn't exist return error message and set not found res status
+  if (!genre)
+    return res.status(404).send("The genre You're looking for doesn't exist");
+
+  if (duplicateGenre)
+    return res.status(400).send("Can't rename genre to an existing genre");
+
+  //If the genre searched exists we'll allow the user to update the genre name
+  const index = genres.indexOf(genre);
+  genres[index].genre = req.body.genre;
+
+  res.send(genres);
+});
