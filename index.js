@@ -7,10 +7,18 @@ const Joi = require("joi");
 //assign the created application to the app object
 const app = express();
 
-//The express.json function returns a middleware function. which reads the request and
-//if there is a json object in the body of the request it will then parse the body of the request
-//into a json object
+/*The express.json function returns a middleware function. which reads the request and
+if there is a json object in the body of the request it will then parse the body of the request
+into a json object */
 app.use(express.json());
+/*Similar to express.json urlencoded returns a middleware function that parses urlencoded payloads
+ body-parser is now a deprecated constructor to be able to use the methods inside you need to call the methods
+ explicitly then set the extended property to true inside the object of the methods argument */
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 //The extracted logger middlelware function is atrributed to the logger object we then call
 //said method inside of app.use()
