@@ -2,12 +2,24 @@
 
 //import express to create web server
 const express = require("express");
+const logger = require("./logger");
 const Joi = require("joi");
 //assign the created application to the app object
 const app = express();
 
-//Allows Json type text to be passed through the middleware
+//The express.json function returns a middleware function. which reads the request and
+//if there is a json object in the body of the request it will then parse the body of the request
+//into a json object
 app.use(express.json());
+
+//The extracted logger middlelware function is atrributed to the logger object we then call
+//said method inside of app.use()
+app.use(logger);
+
+app.use(function (req, res, next) {
+  console.log("authenticating");
+  next();
+});
 
 //Create a port object that will equal environemntal variabled if undefined set to 3000
 const port = process.env.PORT || 3000;
@@ -93,3 +105,5 @@ function validateGenres(genre) {
 
   return schema.validate(genre);
 }
+
+/* Each middleware function should be in it's own seperate file or module*/
