@@ -2,6 +2,7 @@
 
 //import express to create web server
 const express = require("express");
+const Joi = require("joi");
 //assign the created application to the app object
 const app = express();
 
@@ -33,6 +34,9 @@ app.get("/vidly.com/api/genres", (req, res) => {
 });
 
 app.post("/vidly.com/api/genres", (req, res) => {
+  //Validating if the property requested passes the Joi schema before adding it to the database
+  const { error } = validateGenres(req.body);
+  if (error) return res.send(error.details[0].message);
   //Look to see if post request genre already exists
   const duplicateGenre = genres.find(
     (g) => g.genre.toLowerCase() === req.body.genre.toLowerCase()
@@ -49,6 +53,8 @@ app.post("/vidly.com/api/genres", (req, res) => {
 });
 
 app.put("/vidly.com/api/genres/:id", (req, res) => {
+  const { error } = validateGenres(req.body);
+  if (error) return res.send(error.details[0].message);
   //Check to see if genre id user is searching for exists
   const genre = genres.find((g) => g.id === parseInt(req.params.id));
   //Check to see if the updated genre equals an existing genre name
@@ -68,3 +74,11 @@ app.put("/vidly.com/api/genres/:id", (req, res) => {
 
   res.send(genres);
 });
+
+function validateGenres(genre) {
+  const schema = Joi.object({
+    genre: Joi.string().required().min(3),
+  });
+
+  return schema.validate(genre);
+}
