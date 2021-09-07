@@ -19,6 +19,8 @@ app.use(
     extended: true,
   })
 );
+/*express.static is used to serve static files. The first argument is the name of a folder  */
+app.use(express.static("public"));
 
 //The extracted logger middlelware function is atrributed to the logger object we then call
 //said method inside of app.use()
