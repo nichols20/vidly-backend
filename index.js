@@ -75,6 +75,17 @@ app.put("/vidly.com/api/genres/:id", (req, res) => {
   res.send(genres);
 });
 
+app.delete("/vidly.com/api/genres/:id", (req, res) => {
+  //Check to see if object id exists or has already been deleted
+  const genre = genres.find((g) => g.id === parseInt(req.params.id));
+
+  if (!genre) return res.status(404).send(`The genre searched doesn't exist `);
+
+  const index = genres.indexOf(genre);
+  genres.splice(index, 1);
+  res.send(genres);
+});
+
 function validateGenres(genre) {
   const schema = Joi.object({
     genre: Joi.string().required().min(3),
