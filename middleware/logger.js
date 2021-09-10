@@ -2,7 +2,7 @@
 function log(req, res, next) {
   console.log("logging");
 
-  //if there is no next function in a custome middleware function the server will be stuck
+  //if there is no next function in a custom middleware function the server will be stuck
   //inside this current function similar to how you would need to terminate a loop function you need
   //to make sure you are terminating a middleware function either with next or sending a res to the client
   next();
