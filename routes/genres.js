@@ -2,15 +2,29 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 
-const genres = [
-  { id: 1, genre: "Action" },
-  { id: 2, genre: "Thriller" },
-  { id: 3, genre: "Comedy" },
-];
+const mongoose = require("mongoose");
+
+mongoose
+  .connect("mongodb://localhost/vidly")
+  .then(() => console.log("connected to vidly backend"))
+  .catch((error) => console.error(`could not connect to mongodb ${error}`));
+
+const genresSchema = new mongoose.Schema({
+  name: { type: String, required: true, min: 3 },
+});
+
+const Genre = mongoose.model("genres", genresSchema);
+
+async function getGenres() {
+  const genres = await Genre.find();
+  return genres;
+}
 
 //Establishing the genres url path
 router.get("", (req, res) => {
-  res.send(genres);
+  getGenres().then((result) => {
+    res.send(result);
+  });
 });
 
 router.post("", (req, res) => {
