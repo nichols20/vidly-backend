@@ -10,7 +10,12 @@ mongoose
   .catch((error) => console.error(`could not connect to mongodb ${error}`));
 
 const genresSchema = new mongoose.Schema({
-  name: { type: String, required: true, min: 3 },
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    message: "Genre must have a name",
+  },
 });
 
 const Genre = mongoose.model("genres", genresSchema);
@@ -18,6 +23,21 @@ const Genre = mongoose.model("genres", genresSchema);
 async function getGenres() {
   const genres = await Genre.find();
   return genres;
+}
+
+async function createGenre(newGenre) {
+  const genre = new Genre({
+    name: newGenre.name,
+  });
+
+  try {
+    const result = await genre.save();
+    console.log(result);
+  } catch (ex) {
+    for (field in ex.errors) {
+      console.log(ex.errors[field].message);
+    }
+  }
 }
 
 //Establishing the genres url path
@@ -28,22 +48,10 @@ router.get("", (req, res) => {
 });
 
 router.post("", (req, res) => {
-  //Validating if the property requested passes the Joi schema before adding it to the database
-  const { error } = validateGenres(req.body);
-  if (error) return res.send(error.details[0].message);
-  //Look to see if post request genre already exists
-  const duplicateGenre = genres.find(
-    (g) => g.genre.toLowerCase() === req.body.genre.toLowerCase()
-  );
-  //If the genre exists send error message set bad request status
-  if (duplicateGenre) return res.status(400).send(`genre already exists`);
-
-  //If no duplicate genre exists push requested genre to genres object
-  const genre = { id: genres.length + 1, genre: req.body.genre };
-  genres.push(genre);
+  createGenre(req.body);
 
   //return new genres object to user
-  res.send(genres);
+  res.send(req.body);
 });
 
 router.put("/:id", (req, res) => {
