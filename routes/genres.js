@@ -57,6 +57,11 @@ async function updateGenre(id, updateName) {
     console.log(ex);
   }
 }
+
+async function deleteGenre(id) {
+  const genre = await Genre.deleteOne({ _id: id });
+  console.log(genre);
+}
 //Establishing the genres url path
 router.get("", (req, res) => {
   getGenres().then((result) => {
@@ -65,7 +70,7 @@ router.get("", (req, res) => {
 });
 
 router.post("", (req, res) => {
-  createGenre(req.body);
+  createGenre(req.body).then((result) => console.log(result));
 
   //return new genres object to user
   res.send(req.body);
@@ -78,14 +83,9 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  //Check to see if object id exists or has already been deleted
-  const genre = genres.find((g) => g.id === parseInt(req.params.id));
-
-  if (!genre) return res.status(404).send(`The genre searched doesn't exist `);
-
-  const index = genres.indexOf(genre);
-  genres.splice(index, 1);
-  res.send(genres);
+  deleteGenre(req.params.id).then((result) => {
+    res.send("The requested Object has been deleted");
+  });
 });
 
 function validateGenres(genre) {
