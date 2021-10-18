@@ -14,7 +14,6 @@ const genresSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
-    message: "Genre must have a name",
   },
 });
 
@@ -26,11 +25,13 @@ async function getGenres() {
 }
 
 async function createGenre(newGenre) {
+  //create new genre object then attribute requested name to objects name value
   const genre = new Genre({
     name: newGenre.name,
   });
 
   try {
+    //attempt to save genre in database, display result of save method
     const result = await genre.save();
     console.log(result);
   } catch (ex) {
@@ -40,6 +41,22 @@ async function createGenre(newGenre) {
   }
 }
 
+async function updateGenre(id, updateName) {
+  //find genre user wishes to update
+  const genre = await Genre.findById(id);
+  /* more validation required that I will get back to later
+   */
+  //change old genre name to the new name user requested
+  genre.name = updateName.name;
+
+  try {
+    const result = await genre.save();
+    console.log(result);
+    return result;
+  } catch (ex) {
+    console.log(ex);
+  }
+}
 //Establishing the genres url path
 router.get("", (req, res) => {
   getGenres().then((result) => {
@@ -55,26 +72,9 @@ router.post("", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  const { error } = validateGenres(req.body);
-  if (error) return res.send(error.details[0].message);
-  //Check to see if genre id user is searching for exists
-  const genre = genres.find((g) => g.id === parseInt(req.params.id));
-  //Check to see if the updated genre equals an existing genre name
-  const duplicateGenre = genres.find(
-    (g) => g.genre.toLowerCase() === req.body.genre.toLowerCase()
-  );
-  //If genre doesn't exist return error message and set not found res status
-  if (!genre)
-    return res.status(404).send("The genre You're looking for doesn't exist");
-
-  if (duplicateGenre)
-    return res.status(400).send("Can't rename genre to an existing genre");
-
-  //If the genre searched exists we'll allow the user to update the genre name
-  const index = genres.indexOf(genre);
-  genres[index].genre = req.body.genre;
-
-  res.send(genres);
+  updateGenre(req.params.id, req.body).then((result) => {
+    res.send(result);
+  });
 });
 
 router.delete("/:id", (req, res) => {
