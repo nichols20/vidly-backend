@@ -6,7 +6,14 @@ const express = require("express");
 const app = express();
 const home = require("./routes/home");
 const genres = require("./routes/genres");
+const customers = require("./routes/customers");
 const logger = require("./middleware/logger");
+const mongoose = require("mongoose");
+
+mongoose
+  .connect("mongodb://localhost/vidly")
+  .then(() => console.log("connected to vidly backend"))
+  .catch((error) => console.error(`could not connect to mongodb ${error}`));
 
 /*The express.json function returns a middleware function. which reads the request and
 if there is a json object in the body of the request it will then parse the body of the request
@@ -29,6 +36,7 @@ app.use(logger);
 
 app.use("/", home);
 app.use("/api/genres", genres);
+app.use("/api/customers", customers);
 
 app.use(function (req, res, next) {
   console.log("authenticating");

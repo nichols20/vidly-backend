@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
-
 const mongoose = require("mongoose");
-
-mongoose
-  .connect("mongodb://localhost/vidly")
-  .then(() => console.log("connected to vidly backend"))
-  .catch((error) => console.error(`could not connect to mongodb ${error}`));
 
 const genresSchema = new mongoose.Schema({
   name: {
@@ -59,8 +53,7 @@ async function updateGenre(id, updateName) {
 }
 
 async function deleteGenre(id) {
-  const genre = await Genre.deleteOne({ _id: id });
-  console.log(genre);
+  await Genre.deleteOne({ _id: id });
 }
 //Establishing the genres url path
 router.get("", (req, res) => {
@@ -70,7 +63,7 @@ router.get("", (req, res) => {
 });
 
 router.post("", (req, res) => {
-  createGenre(req.body).then((result) => console.log(result));
+  createGenre(req.body);
 
   //return new genres object to user
   res.send(req.body);
@@ -83,7 +76,7 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  deleteGenre(req.params.id).then((result) => {
+  deleteGenre(req.params.id).then(() => {
     res.send("The requested Object has been deleted");
   });
 });
