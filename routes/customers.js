@@ -25,4 +25,33 @@ router.post("", async (req, res) => {
   });
 });
 
+router.put("/:id", async (req, res) => {
+  const { error } = await validate(req.body);
+  if (error) {
+    res.send(error.details[0].message);
+    return;
+  }
+
+  const customer = await Customer.findById(req.params.id);
+  console.log(customer);
+  if (!customer)
+    return res
+      .status(404)
+      .send("The customer you are searching for does not exist");
+
+  try {
+    const updateCustomer = await Customer.updateOne(
+      { _id: req.params.id },
+      {
+        isGold: req.body.isGold,
+        name: req.body.name,
+        phone: req.body.phone,
+      }
+    );
+    console.log(updateCustomer);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = router;
