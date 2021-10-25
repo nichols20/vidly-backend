@@ -1,27 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const Joi = require("joi");
-const mongoose = require("mongoose");
+const { Genre, validate } = require("../models/genres");
 
-const genresSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 3,
-  },
+//Establishing the genres url path
+router.get("", async (req, res) => {
+  await Genre.find()
+    .sort("asc")
+    .then((result) => {
+      res.send(result);
+    });
 });
 
-const Genre = mongoose.model("genres", genresSchema);
+router.post("", async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.send(error.details[0].message);
 
-async function getGenres() {
-  const genres = await Genre.find();
-  return genres;
-}
-
-async function createGenre(newGenre) {
   //create new genre object then attribute requested name to objects name value
   const genre = new Genre({
-    name: newGenre.name,
+    name: req.body.name,
   });
 
   try {
@@ -33,60 +29,43 @@ async function createGenre(newGenre) {
       console.log(ex.errors[field].message);
     }
   }
-}
-
-async function updateGenre(id, updateName) {
-  //find genre user wishes to update
-  const genre = await Genre.findById(id);
-  /* more validation required that I will get back to later
-   */
-  //change old genre name to the new name user requested
-  genre.name = updateName.name;
-
-  try {
-    const result = await genre.save();
-    console.log(result);
-    return result;
-  } catch (ex) {
-    console.log(ex);
-  }
-}
-
-async function deleteGenre(id) {
-  await Genre.deleteOne({ _id: id });
-}
-//Establishing the genres url path
-router.get("", (req, res) => {
-  getGenres().then((result) => {
-    res.send(result);
-  });
-});
-
-router.post("", (req, res) => {
-  createGenre(req.body);
 
   //return new genres object to user
   res.send(req.body);
 });
 
-router.put("/:id", (req, res) => {
-  updateGenre(req.params.id, req.body).then((result) => {
-    res.send(result);
-  });
+router.put("/:id", async (req, res) => {
+  console.log("route method has begun");
+  const { error } = validate(req.body);
+  if (error) return res.send(error.details[0].message);
+
+  console.log("update function began");
+  //find genre user wishes to update
+  const genre = await Genre.findById(req.params.id).catch((error) =>
+    console.log(error)
+  );
+  console.log(genre);
+  /* more validation required that I will get back to later
+   */
+  //change old genre name to the new name user requested
+  genre.name = req.body.name;
+
+  try {
+    const result = await genre.save();
+    res.send("Genre has been updated");
+    console.log(result);
+    return result;
+  } catch (ex) {
+    console.log(ex);
+  }
+
+  res.send("this is the route");
 });
 
-router.delete("/:id", (req, res) => {
-  deleteGenre(req.params.id).then(() => {
-    res.send("The requested Object has been deleted");
-  });
+router.delete("/:id", async (req, res) => {
+  await Genre.deleteOne({ _id: id })
+    .then(res.send("Genre selected has been deleted"))
+    .catch((error) => console.log(`delete method error ${error}`));
 });
-
-function validateGenres(genre) {
-  const schema = Joi.object({
-    genre: Joi.string().required().min(3),
-  });
-
-  return schema.validate(genre);
-}
 
 module.exports = router;
