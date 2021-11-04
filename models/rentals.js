@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const joi = require("joi");
+const { genreSchema } = require("../models/genres");
 
 const Rental = mongoose.model(
   "Rentals",
@@ -11,7 +12,7 @@ const Rental = mongoose.model(
     },
     movie: {
       title: { type: String, required: true, min: 5, max: 55 },
-      genre: { type: String, required: true, min: 5, max: 55 },
+      genre: genreSchema,
     },
     dailyRentalRate: {
       type: Number,
