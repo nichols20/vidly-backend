@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
+new mongoose.Schema({});
 const Customer = mongoose.model(
   "Customer",
   (customerSchema = new mongoose.Schema({
