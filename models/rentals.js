@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const Rental = new mongoose.model(
+const Rental = mongoose.model(
   "Rentals",
   new mongoose.Schema({
     customer: {
