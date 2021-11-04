@@ -8,7 +8,7 @@ const home = require("./routes/home");
 const genres = require("./routes/genres");
 const customers = require("./routes/customers");
 const movies = require("./routes/movies");
-const rentals = require("./models/rentals");
+const rentals = require("./routes/rentals");
 const logger = require("./middleware/logger");
 const mongoose = require("mongoose");
 
@@ -44,7 +44,6 @@ app.use("/api/rentals", rentals);
 
 app.use(function (req, res, next) {
   console.log("authenticating");
-  next();
 });
 
 //Create a port object that will equal environemntal variabled if undefined set to 3000

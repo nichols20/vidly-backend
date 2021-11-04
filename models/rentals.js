@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
+const joi = require("joi");
 
 const Rental = mongoose.model(
   "Rentals",
@@ -42,14 +42,14 @@ const Rental = mongoose.model(
   })
 );
 
-async function validateCustomers(rental) {
-  const schema = Joi.object({
-    customer: Joi.string().required.min(5).max(55),
-    moviedID: Joi.string().required().min(6).max(100),
+function validateRental(rental) {
+  const schema = joi.object({
+    customerID: joi.string().required().min(5).max(55),
+    movieID: joi.string().required().min(6).max(100),
   });
 
   return schema.validate(rental);
 }
 
-module.exports.validate = validateCustomers;
+module.exports.validateRental = validateRental;
 module.exports.Rental = Rental;
