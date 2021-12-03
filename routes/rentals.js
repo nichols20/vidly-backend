@@ -3,7 +3,15 @@ const router = express.Router();
 const { Rental, validateRental } = require("../models/rentals");
 const { Movie } = require("../models/movies");
 const { Customer } = require("../models/customer");
-const { isValidObjectId } = require("mongoose");
+const { isValidObjectId, Mongoose } = require("mongoose");
+const { MongoClient } = require("mongodb");
+
+const client = new MongoClient("mongodb://localhost:27017/vidly");
+
+client
+  .connect()
+  .then(console.log("transaction connection succeeded"))
+  .catch((ex) => console.log(ex));
 
 router.post("", async (req, res) => {
   const { error } = validateRental(req.body);
