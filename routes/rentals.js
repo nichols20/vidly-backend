@@ -52,7 +52,12 @@ router.post("", async (req, res) => {
       .db("vidly")
       .collection("rentals")
       .insertOne(rental);
-    console.log(result);
+
+    await client
+      .db("vidly")
+      .collection("movies")
+      .updateOne({ _id: movie._id }, { $inc: { numberInStock: -1 } });
+
     res.send(result);
   } catch (ex) {
     console.log(ex);
