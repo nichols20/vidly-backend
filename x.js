@@ -36,3 +36,20 @@ let course = {
     name: "mosh",
   },
 };
+
+//Authentication the process of identifying if the user is who they are
+
+//Authorization is determining if the user has the required permission to perform operations
+//that modify data
+
+//Register: Post /api/users {name, email, password}
+
+/*
+email: {
+  type: String, 
+  unique: true //this is to insure we don't store two documents with the same email in mongodb
+} 
+*/
+
+//The crud operation you'd use would be a POST because you're creating a new
+//Login:  POST /api/logins --

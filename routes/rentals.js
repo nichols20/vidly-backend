@@ -3,7 +3,7 @@ const router = express.Router();
 const { Rental, validateRental } = require("../models/rentals");
 const { Movie } = require("../models/movies");
 const { Customer } = require("../models/customer");
-const { isValidObjectId, Mongoose } = require("mongoose");
+const { isValidObjectId } = require("mongoose");
 const { MongoClient } = require("mongodb");
 
 const client = new MongoClient("mongodb://localhost:27017/vidly");
@@ -48,20 +48,26 @@ router.post("", async (req, res) => {
   //then updating the movies object in the database. We want to do these same operations
   //but by using a transactions method
   try {
-    const result = await client
-      .db("vidly")
-      .collection("rentals")
-      .insertOne(rental);
+    await client.db("vidly").collection("rentals").insertOne(rental);
 
     await client
       .db("vidly")
       .collection("movies")
       .updateOne({ _id: movie._id }, { $inc: { numberInStock: -1 } });
 
-    res.send(result);
+    console.log(rental);
+    res.send(rental);
   } catch (ex) {
     console.log(ex);
+    res.status(500).send("something failed");
   }
 });
 
 module.exports = router;
+
+//_ID strings consist of 24 characters and every 2 characters represents a byte (there are 12 bytes)
+
+// the first four bytes represent a timestap
+//The next three bytes represent a machine identifier
+//The next two bytes represent a process identifier
+//The final three bytes represent a counter
