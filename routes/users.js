@@ -6,6 +6,9 @@ router.post("", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.send(error.details[0].message).status(400);
 
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send("User aready registered ");
+
   const user = new User({
     name: req.body.name,
     email: req.body.name,
