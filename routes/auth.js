@@ -1,8 +1,10 @@
 const _ = require("lodash");
+const jwt = require("jsonwebtoken");
 const { User } = require("../models/users");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const Joi = require("joi");
 
 router.post("", async (req, res) => {
   const { error } = validate(req.body);
@@ -14,11 +16,14 @@ router.post("", async (req, res) => {
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) return res.status(400).send("Invalid Email or Password");
 
-  res.send(true);
+  //A Json Web Token is a long string that identifies a user
+  const token = jwt.sign({ _id: user._id }, "jwtprivatekey");
+
+  res.send(token);
 });
 
 function validate(req) {
-  const schema = joi.object({
+  const schema = Joi.object({
     email: Joi.string().required().min(8).max(100).email(),
     password: Joi.string().required().min(3).max(100),
   });
