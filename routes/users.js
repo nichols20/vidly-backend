@@ -1,6 +1,8 @@
 const _ = require("lodash");
+const jwt = require("jsonwebtoken");
 const { User, validate } = require("../models/users");
 const express = require("express");
+const config = require("config");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
@@ -18,7 +20,9 @@ router.post("", async (req, res) => {
 
   try {
     await user.save();
-    res.send(_.pick(user, ["name", "email"]));
+    const token = jwt.sign({ _id: user._id }, config.get("jwtprivatekey"));
+    //custom headers that we define in an app should be prefixed with x-
+    res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
   } catch (ex) {
     console.log(ex);
     res.send(ex);
