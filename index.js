@@ -13,7 +13,12 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 const logger = require("./middleware/logger");
 const mongoose = require("mongoose");
+const config = require("config");
 
+if (!config.get("jwtprivatekey")) {
+  console.error("FATAL ERROR: jwtprivatekey is not defined ");
+  process.exit(1);
+}
 mongoose
   .connect("mongodb://localhost/vidly")
   .then(() => console.log("connected to vidly backend"))
