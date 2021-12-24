@@ -20,7 +20,7 @@ router.post("", async (req, res) => {
 
   try {
     await user.save();
-    const token = jwt.sign({ _id: user._id }, config.get("jwtprivatekey"));
+    const token = user.generateAuthToken();
     //custom headers that we define in an app should be prefixed with x-
     res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
   } catch (ex) {

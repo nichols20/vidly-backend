@@ -53,3 +53,5 @@ email: {
 
 //The crud operation you'd use would be a POST because you're creating a new
 //Login:  POST /api/logins --
+
+// Information Expert Principle
