@@ -1,10 +1,14 @@
 const _ = require("lodash");
-const jwt = require("jsonwebtoken");
 const { User, validate } = require("../models/users");
 const express = require("express");
-const config = require("config");
 const router = express.Router();
+const auth = require("../middleware/auth");
 const bcrypt = require("bcrypt");
+
+router.get("/me", auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  res.send(user);
+});
 
 router.post("", async (req, res) => {
   const { error } = validate(req.body);

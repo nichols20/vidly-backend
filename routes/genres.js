@@ -1,6 +1,6 @@
-const auth = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
 const { Genre, validate } = require("../models/genres");
 
 //Establishing the genres url path

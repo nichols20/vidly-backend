@@ -1,6 +1,7 @@
 const express = require("express");
 const { isValidObjectId } = require("mongoose");
 const router = express.Router();
+const auth = require("../middleware/auth");
 const { Genre } = require("../models/genres");
 const { Movie, validateMovies } = require("../models/movies");
 
@@ -9,10 +10,11 @@ router.get("", async (req, res) => {
   res.send(result);
 });
 
-router.post("", async (req, res) => {
-  console.log("checkpoint 1");
+router.post("", auth, async (req, res) => {
+  const token = req.header("x-auth-token");
+  res.status(401);
+
   const { error } = validateMovies(req.body);
-  console.log("checkpoint2");
   if (error) return res.status(400).send(error.details[0].message);
 
   const result = isValidObjectId(req.body.genreID);
@@ -21,7 +23,6 @@ router.post("", async (req, res) => {
       .status(404)
       .send("The genre selected could not be found or is invalid");
   const genre = await Genre.findById(req.body.genreID);
-  console.log(genre, "this is the genre");
 
   const movie = new Movie({
     title: req.body.title,
@@ -38,7 +39,6 @@ router.post("", async (req, res) => {
     console.log(result);
     res.send(result);
   } catch (ex) {
-    console.log("were here");
     console.log(ex);
   }
 });
