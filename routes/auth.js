@@ -18,7 +18,7 @@ router.post("", async (req, res) => {
   if (!validPassword) return res.status(400).send("Invalid Email or Password");
 
   //A Json Web Token is a long string that identifies a user
-  const token = user.generateAuthToken;
+  const token = user.generateAuthToken();
 
   res.send(token);
 });

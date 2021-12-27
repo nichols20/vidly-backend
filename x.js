@@ -57,5 +57,6 @@ email: {
 // Information Expert Principle
 
 // 400: Bad Request Error
-// 401: Client does not have the authentic credentials required for this endpoint
+// 401: Client has the possibility of authorization to access the resource but has not sent a valid jsonwebtoken to the server
+// 403: FORBIDDEN - Response when client sends a valid jsonwebtoken yet still doesn't have the required permission to access the requested resource
 // 404: Not Found

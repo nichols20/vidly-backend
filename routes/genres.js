@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const { Genre, validate } = require("../models/genres");
 
 //Establishing the genres url path
@@ -66,8 +67,8 @@ router.put("/:id", async (req, res) => {
   res.send("this is the route");
 });
 
-router.delete("/:id", async (req, res) => {
-  await Genre.deleteOne({ _id: id })
+router.delete("/:id", [auth, admin], async (req, res) => {
+  await Genre.deleteOne({ _id: req.params.id })
     .then(res.send("Genre selected has been deleted"))
     .catch((error) => console.log(`delete method error ${error}`));
 });
