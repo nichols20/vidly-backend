@@ -55,3 +55,7 @@ email: {
 //Login:  POST /api/logins --
 
 // Information Expert Principle
+
+// 400: Bad Request Error
+// 401: Client does not have the authentic credentials required for this endpoint
+// 404: Not Found

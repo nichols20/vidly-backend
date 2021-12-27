@@ -1,3 +1,4 @@
+const auth = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
 const { Genre, validate } = require("../models/genres");
@@ -11,7 +12,10 @@ router.get("", async (req, res) => {
     });
 });
 
-router.post("", async (req, res) => {
+router.post("", auth, async (req, res) => {
+  const token = req.header("x-auth-token");
+  res.status(401);
+
   const { error } = validate(req.body);
   if (error) return res.send(error.details[0].message);
 
