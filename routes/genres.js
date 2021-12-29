@@ -6,11 +6,12 @@ const { Genre, validate } = require("../models/genres");
 
 //Establishing the genres url path
 router.get("", async (req, res) => {
-  await Genre.find()
-    .sort("asc")
-    .then((result) => {
-      res.send(result);
-    });
+  try {
+    const genre = await Genre.find().sort("asc");
+    res.send(genre);
+  } catch (ex) {
+    next(ex);
+  }
 });
 
 router.post("", auth, async (req, res) => {

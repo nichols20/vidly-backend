@@ -11,6 +11,7 @@ const movies = require("./routes/movies");
 const rentals = require("./routes/rentals");
 const users = require("./routes/users");
 const auth = require("./routes/auth");
+const error = require("./middleware/error");
 const logger = require("./middleware/logger");
 const mongoose = require("mongoose");
 const config = require("config");
@@ -50,10 +51,7 @@ app.use("/api/movies", movies);
 app.use("/api/rentals", rentals);
 app.use("/api/users", users);
 app.use("/api/auth", auth);
-
-app.use(function (req, res, next) {
-  console.log("authenticating");
-});
+app.use(error);
 
 //Create a port object that will equal environemntal variabled if undefined set to 3000
 const port = process.env.PORT || 3000;
