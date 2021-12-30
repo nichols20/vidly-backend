@@ -2,6 +2,7 @@
 
 //import express to create web server
 const express = require("express");
+require("express-async-errors");
 //assign the created application to the app object
 const app = express();
 const home = require("./routes/home");
@@ -12,14 +13,18 @@ const rentals = require("./routes/rentals");
 const users = require("./routes/users");
 const auth = require("./routes/auth");
 const error = require("./middleware/error");
+const winston = require("winston");
 const logger = require("./middleware/logger");
 const mongoose = require("mongoose");
 const config = require("config");
+
+winston.add(new winston.transports.File({ filename: "logfile.log" }));
 
 if (!config.get("jwtprivatekey")) {
   console.error("FATAL ERROR: jwtprivatekey is not defined ");
   process.exit(1);
 }
+
 mongoose
   .connect("mongodb://localhost/vidly")
   .then(() => console.log("connected to vidly backend"))

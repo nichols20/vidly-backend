@@ -9,6 +9,7 @@ const { Genre, validate } = require("../models/genres");
 router.get(
   "",
   asyncMiddleware(async (req, res) => {
+    throw new Error("could not get genres");
     const genre = await Genre.find().sort("asc");
     res.send(genre);
   })
