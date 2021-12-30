@@ -20,6 +20,14 @@ const movies = require("./routes/movies");
 const error = require("./middleware/error");
 const rentals = require("./routes/rentals");
 const customers = require("./routes/customers");
+const uncaughtError = require("./middleware/uncaughtException");
+
+//In the event of an uncaught Exception the following listener will capture the exception and store it in mongodb
+process.on("uncaughtException", (ex) => {
+  console.log("UNCAUGHT EXCEPTION ERROR");
+
+  uncaughtError(ex);
+});
 
 if (!config.get("jwtprivatekey")) {
   console.error("FATAL ERROR: jwtprivatekey is not defined ");
