@@ -1,19 +1,36 @@
-const { createLogger } = require("winston");
 const winston = require("winston");
+const { createLogger, format } = require("winston");
+const { combine, errors, metadata, timestamp } = format;
 
 module.exports = function (err, req, res, next) {
-  //The first argument you need to set the logging level. This determines the importance of the message we're going to log
+  const logger = createLogger({
+    level: "error",
+    format: combine(
+      errors({ stack: true }), // stores error stack
+      timestamp(),
+      metadata() //Sends error object to the meta field
+    ),
+    transports: [
+      new winston.transports.MongoDB({
+        db: "mongodb://localhost/vidly",
+        options: { useUnifiedTopology: true },
+      }),
 
-  winston.error(err.message, err);
+      new winston.transports.File({
+        filename: "logfile.log",
+        format: combine(format.json()), //stores error in json format
+      }),
+    ],
+  });
 
-  console.log("winston sucks", err);
-
-  // error- Most important level
-  // warn
-  // info
-  // verbose
-  // debug
-  // silly
+  logger.error(err);
 
   res.status(500).send("Something failed.");
 };
+
+// error- Most important level
+// warn
+// info
+// verbose
+// debug
+// silly

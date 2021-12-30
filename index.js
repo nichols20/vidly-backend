@@ -3,22 +3,23 @@
 //import express to create web server
 const express = require("express");
 require("express-async-errors");
+
 //assign the created application to the app object
 const app = express();
-const home = require("./routes/home");
-const genres = require("./routes/genres");
-const customers = require("./routes/customers");
-const movies = require("./routes/movies");
-const rentals = require("./routes/rentals");
-const users = require("./routes/users");
-const auth = require("./routes/auth");
-const error = require("./middleware/error");
-const winston = require("winston");
-const logger = require("./middleware/logger");
-const mongoose = require("mongoose");
-const config = require("config");
 
-winston.add(new winston.transports.File({ filename: "logfile.log" }));
+require("winston-mongodb");
+const config = require("config");
+const mongoose = require("mongoose");
+
+// Imported Route Handlers and Middleware
+const home = require("./routes/home");
+const auth = require("./routes/auth");
+const users = require("./routes/users");
+const genres = require("./routes/genres");
+const movies = require("./routes/movies");
+const error = require("./middleware/error");
+const rentals = require("./routes/rentals");
+const customers = require("./routes/customers");
 
 if (!config.get("jwtprivatekey")) {
   console.error("FATAL ERROR: jwtprivatekey is not defined ");
@@ -44,10 +45,6 @@ app.use(
 );
 /*express.static is used to serve static files. The first argument is the name of a folder  */
 app.use(express.static("public"));
-
-//The extracted logger middlelware function is atrributed to the logger object we then call
-//said method inside of app.use()
-app.use(logger);
 
 app.use("/", home);
 app.use("/api/genres", genres);
