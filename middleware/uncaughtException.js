@@ -1,3 +1,4 @@
+require("winston-mongodb");
 const winston = require("winston");
 const { createLogger, format } = require("winston");
 const { combine, errors, metadata, timestamp } = format;
@@ -14,7 +15,7 @@ module.exports = function (err) {
 
       new winston.transports.File({
         filename: "logfile.log",
-        format: format.json(),
+        format: combine(format.json()),
       }),
     ],
   });
