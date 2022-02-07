@@ -14,9 +14,10 @@ require("./startup/config")();
 //Create a port object that will equal environemntal variabled if undefined set to 3000
 const port = process.env.PORT || 3000;
 
-//wrote listen function to create server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`listening in port ${port}`);
 });
+
+module.exports = server;
 
 /* Each middleware function should be in it's own seperate file or module*/
