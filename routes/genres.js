@@ -4,7 +4,7 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const asyncMiddleware = require("../middleware/async");
 const { Genre, validate } = require("../models/genres");
-const { isValidObjectId } = require("mongoose");
+const validateObjectId = require("../middleware/validateObjectId");
 
 //Establishing the genres url path
 
@@ -18,9 +18,8 @@ router.get(
 
 router.get(
   "/:id",
+  validateObjectId,
   asyncMiddleware(async (req, res) => {
-    const isValid = isValidObjectId(req.params.id);
-    if (!isValid) return res.status(404).send("Please input a valid object ID");
     const genre = await Genre.findById(req.params.id);
 
     if (!genre)
