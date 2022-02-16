@@ -34,7 +34,7 @@ router.post(
   auth,
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.send(error.details[0].message);
+    if (error) return res.status(400).send(error.details[0].message);
 
     //create new genre object then attribute requested name to objects name value
     const genre = new Genre({
@@ -45,7 +45,7 @@ router.post(
     const result = await genre.save();
 
     //return new genres object to user
-    res.send(req.body);
+    res.send(result);
   })
 );
 

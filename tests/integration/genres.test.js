@@ -4,6 +4,7 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
 const { Genre, validate } = require("../../models/genres");
+const { User } = require("../../models/users");
 let server;
 
 describe("/api/genres", () => {
@@ -62,6 +63,48 @@ describe("/api/genres", () => {
         .post("/api/genres")
         .send({ name: "genre1" });
       expect(response.status).toBe(401);
+    });
+
+    it("should return 400 if genre is invalid", async () => {
+      const token = new User().generateAuthToken();
+
+      const response = await request(server)
+        .post("/api/genres")
+        .set("x-auth-token", token) //to simulate login auth we use the set() method; first argument is the header we're setting and the second arg will be the value of header name
+        .send({ name: "1234" });
+
+      const res = await request(server)
+        .post("/api/genres")
+        .set("x-auth-token", token)
+        .send({ name: new Array(52).join("a") });
+
+      expect(response.status).toBe(400);
+      expect(res.status).toBe(400);
+    });
+
+    it("should post new genre to the database", async () => {
+      const token = new User().generateAuthToken();
+
+      await request(server)
+        .post("/api/genres")
+        .set("x-auth-token", token)
+        .send({ name: "Anime234" });
+
+      const genre = await Genre.find({ name: "Anime234" });
+
+      expect(genre).not.toBeNull();
+    });
+
+    it("should return the genre if it is valid", async () => {
+      const token = new User().generateAuthToken();
+
+      const response = await request(server)
+        .post("/api/genres")
+        .set("x-auth-token", token)
+        .send({ name: "Anime234" });
+
+      expect(response.body).toHaveProperty("_id");
+      expect(response.body).toHaveProperty("name", "Anime234");
     });
   });
 });
