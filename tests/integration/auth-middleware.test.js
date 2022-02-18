@@ -1,11 +1,10 @@
 let server;
+let token;
 const request = require("supertest");
-const mongoose = require("mongoose");
+const { Genre } = require("../../models/genres");
 const { User } = require("../../models/users");
 
 describe("auth-Middleware", () => {
-  let token = new User().generateAuthToken();
-
   beforeEach(() => {
     //initialize server
     server = require("../../index");
@@ -14,16 +13,14 @@ describe("auth-Middleware", () => {
   afterEach(async () => {
     //close server
     server.close();
-    //ran into an error where mongoose would try to log after the server has been closed
-    //don't know why this happened but I solved this error by closing the mongoose connecton manually
-    await mongoose.connection.close();
+    await Genre.deleteMany({});
   });
 
   const execute = () => {
     return request(server)
       .post("/api/genres")
       .set("x-auth-token", token)
-      .send();
+      .send({ name: "genre1" });
   };
 
   it("should return 401 if no token is provided", async () => {
@@ -31,5 +28,19 @@ describe("auth-Middleware", () => {
     const response = await execute();
 
     expect(response.status).toBe(401);
+  });
+
+  it("should return 400 if token is invalid", async () => {
+    token = "a";
+    const response = await execute();
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 200 if token is valid", async () => {
+    token = new User().generateAuthToken();
+    const response = await execute();
+
+    expect(response.status).toBe(200);
   });
 });
