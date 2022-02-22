@@ -3,7 +3,7 @@
 
 const mongoose = require("mongoose");
 const request = require("supertest");
-const { Genre, validate } = require("../../models/genres");
+const { Genre } = require("../../models/genres");
 const { User } = require("../../models/users");
 let server;
 
@@ -43,6 +43,8 @@ describe("/api/genres", () => {
       await Genre.collection.insertOne({ _id: _id, name: "testGenre" });
 
       const response = await request(server).get(`/api/genres/${_id}`);
+
+      console.log(response.error);
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({ _id: _id, name: "testGenre" });
