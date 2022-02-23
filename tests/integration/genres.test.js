@@ -44,8 +44,6 @@ describe("/api/genres", () => {
 
       const response = await request(server).get(`/api/genres/${_id}`);
 
-      console.log(response.error);
-
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({ _id: _id, name: "testGenre" });
     });
@@ -104,7 +102,7 @@ describe("/api/genres", () => {
   });
 
   describe("PUT", () => {
-    it("should return 400 if genre name is less than 5 characters", async () => {
+    it("should return 400 if genre name is invalid", async () => {
       const _id = new mongoose.Types.ObjectId();
 
       await Genre.collection.insertOne({ _id: _id, name: "genre1" });
@@ -113,19 +111,12 @@ describe("/api/genres", () => {
         .put(`/api/genres/${_id}`)
         .send({ name: "1234" });
 
-      expect(response.status).toBe(400);
-    });
-
-    it("should return 400 if genre name is more than 50 characters", async () => {
-      const _id = mongoose.Types.ObjectId();
-
-      await Genre.collection.insertOne({ _id: _id, name: "genre1" });
-
-      const response = await request(server)
+      const response2 = await request(server)
         .put(`/api/genres/${_id}`)
         .send({ name: new Array(52).join("a") });
 
       expect(response.status).toBe(400);
+      expect(response2.status).toBe(400);
     });
 
     it("should return 404 if genre id could not be found", async () => {
@@ -136,6 +127,19 @@ describe("/api/genres", () => {
         .send({ name: "genre1" });
 
       expect(response.status).toBe(404);
+    });
+
+    it("should return updated doc following successful request", async () => {
+      const _id = new mongoose.Types.ObjectId();
+
+      await Genre.collection.insertOne({ _id: _id, name: "genre1" });
+
+      const response = await request(server)
+        .put(`/api/genres/${_id}`)
+        .send({ name: "newGenre" });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toMatchObject({ _id: _id, name: "newGenre" });
     });
   });
 });
