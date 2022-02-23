@@ -5,6 +5,7 @@ const admin = require("../middleware/admin");
 const asyncMiddleware = require("../middleware/async");
 const { Genre, validate } = require("../models/genres");
 const validateObjectId = require("../middleware/validateObjectId");
+const mongoose = require("mongoose");
 
 //Establishing the genres url path
 
@@ -53,19 +54,21 @@ router.put(
   "/:id",
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.send(error.details[0].message);
+    if (error) return res.status(400).send(error.details[0].message);
 
     //find genre user wishes to update
-    const genre = await Genre.findById(req.params.id).catch((error) =>
-      console.log(error)
-    );
+    const genre = await Genre.findById(req.params.id).catch(() => {
+      return null;
+    });
 
-    /* more validation required that I will get back to later */
-    //change old genre name to the new name user requested
-    genre.name = req.body.name;
+    if (!genre) return res.status(404).send("Genre could not be found");
+    else {
+      genre.name = req.body.name;
 
-    const result = await genre.save();
-    res.send(result);
+      const result = await genre.save();
+      res.send(result);
+      return;
+    }
   })
 );
 

@@ -25,7 +25,7 @@ module.exports = function (err, req, res, next) {
 
   logger.error(err);
 
-  res.status(500).send("Something failed.");
+  return res.status(500).send("Something failed.");
 };
 
 // error- Most important level
