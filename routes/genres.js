@@ -58,7 +58,7 @@ router.put(
 
     //find genre user wishes to update
     const genre = await Genre.findById(req.params.id).catch(() => {
-      return null;
+      return;
     });
 
     if (!genre) return res.status(404).send("Genre could not be found");

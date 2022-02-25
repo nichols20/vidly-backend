@@ -142,6 +142,49 @@ describe("/api/genres", () => {
       expect(response.body).toMatchObject({ _id: _id, name: "newGenre" });
     });
   });
+
+  describe("DELETE", () => {
+    it("should return 401 if client is not logged in", async () => {
+      const _id = new mongoose.Types.ObjectId();
+
+      await Genre.collection.insertOne({ _id: _id, name: "genre1" });
+
+      const response = await request(server).delete(`/api/genres/${_id}`);
+
+      expect(response.status).toBe(401);
+    });
+
+    it("should return 403 if client is not admin", async () => {
+      const token = new User().generateAuthToken();
+      const _id = new mongoose.Types.ObjectId();
+
+      await Genre.collection.insertOne({ _id: _id, name: "genre1" });
+
+      const response = await request(server)
+        .delete(`/api/genres/${_id}`)
+        .set("x-auth-token", token);
+
+      expect(response.status).toBe(403);
+    });
+
+    it("Should return 200 after successfull genre delete", async () => {
+      const token = new User({
+        isAdmin: true,
+      }).generateAuthToken();
+
+      const _id = new mongoose.Types.ObjectId();
+
+      await Genre.collection.insertOne({ name: "genre1", _id: _id });
+
+      const response = await request(server)
+        .delete(`/api/genres/${_id}`)
+        .set("x-auth-token", token)
+        .set("user", "lol")
+        .send();
+
+      expect(response.status).toBe(200);
+    });
+  });
 });
 
 //Write tests in a clean state- as if its the only test we've created.
