@@ -11,7 +11,7 @@ describe("auth-Middleware", () => {
 
   afterEach(async () => {
     //close server
-    server.close();
+    await server.close();
   });
 
   const execute = () => {
