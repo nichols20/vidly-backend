@@ -22,6 +22,10 @@ router.post(
     if (!returns)
       return res.status(404).send("Customer movie rental could not be found");
 
+    if (returns.dateReturned)
+      return res.status(400).send("Rental Already returned");
+
+    console.log(returns);
     return;
   })
 );

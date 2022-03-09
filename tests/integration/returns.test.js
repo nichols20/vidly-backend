@@ -74,4 +74,12 @@ describe("/api/returns", () => {
 
     expect(response.status).toBe(404);
   });
+
+  it("should return 400 if return rental is already processed", async () => {
+    const response = await execute(server, customerId, movieId, token);
+
+    console.log(response);
+
+    expect(response.status).toBe(400);
+  });
 });
