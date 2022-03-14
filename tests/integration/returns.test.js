@@ -76,10 +76,17 @@ describe("/api/returns", () => {
   });
 
   it("should return 400 if return rental is already processed", async () => {
+    rental.dateReturned = Date.now();
+    await rental.save();
+
     const response = await execute(server, customerId, movieId, token);
 
-    console.log(response);
-
     expect(response.status).toBe(400);
+  });
+
+  it("should return 200 if request is valid", async () => {
+    const response = await execute(server, customerId, movieId, token);
+
+    expect(response.status).toBe(200);
   });
 });

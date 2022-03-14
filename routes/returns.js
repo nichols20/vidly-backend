@@ -14,7 +14,7 @@ router.post(
       return res.status(400).send("customerId is required");
     if (!req.body.movieId) return res.status(400).send("movieId is required");
 
-    const returns = await Rental.findOne({
+    let returns = await Rental.findOne({
       customerId: req.body.customerId,
       movieId: req.body.movieId,
     });
@@ -25,8 +25,9 @@ router.post(
     if (returns.dateReturned)
       return res.status(400).send("Rental Already returned");
 
-    console.log(returns);
-    return;
+    returns.dateReturned = Date.now();
+
+    return res.status(200).send(returns);
   })
 );
 
