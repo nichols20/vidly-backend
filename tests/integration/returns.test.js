@@ -89,4 +89,12 @@ describe("/api/returns", () => {
 
     expect(response.status).toBe(200);
   });
+
+  it("should set the return date if input is valid", async () => {
+    await execute(server, customerId, movieId, token);
+
+    const rentalReturned = await Rental.findById(rental._id);
+
+    expect(rentalReturned.dateReturned).toBeDefined();
+  });
 });

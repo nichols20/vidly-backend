@@ -27,6 +27,8 @@ router.post(
 
     returns.dateReturned = Date.now();
 
+    await returns.save();
+
     return res.status(200).send(returns);
   })
 );
