@@ -97,4 +97,17 @@ describe("/api/returns", () => {
 
     expect(rentalReturned.dateReturned).toBeDefined();
   });
+
+  it("should calculate a rental fee based on (# of days * movie.dailyRentalRate)", async () => {
+    await execute(server, customerId, movieId, token);
+
+    const rentalReturned = await Rental.findById(rental._id);
+
+    console.log(rentalReturned);
+    expect(rentalReturned.rentalFee).toBeGreaterThanOrEqual(
+      rentalReturned.rentalRate
+    );
+
+    //work in progress
+  });
 });
