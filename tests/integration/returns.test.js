@@ -1,10 +1,12 @@
 let server;
 let movieId;
+let movie;
 let customerId;
 let rental;
 let token;
 const { User } = require("../../models/users");
 const { Rental } = require("../../models/rentals");
+const { Movie } = require("../../models/movies");
 const mongoose = require("mongoose");
 const request = require("supertest");
 
@@ -14,6 +16,16 @@ describe("/api/returns", () => {
     customerId = mongoose.Types.ObjectId();
     movieId = mongoose.Types.ObjectId();
     server = require("../../index");
+
+    movie = new Movie({
+      _id: movieId,
+      title: "12345",
+      dailyRentalRate: 2,
+      genre: { name: "12345" },
+      numberInStock: 10,
+    });
+
+    await movie.save();
 
     rental = new Rental({
       customer: {
@@ -27,7 +39,7 @@ describe("/api/returns", () => {
         _id: movieId,
         title: "12345",
       },
-      dailyRentalRate: 5,
+      dailyRentalRate: 2,
       numberInStock: 2,
     });
     await rental.save();
@@ -36,6 +48,7 @@ describe("/api/returns", () => {
   afterEach(async () => {
     await server.close();
     await Rental.deleteMany({});
+    await Movie.deleteMany({});
   });
 
   const execute = async (server, customerId, movieId, token) => {
@@ -103,11 +116,16 @@ describe("/api/returns", () => {
 
     const rentalReturned = await Rental.findById(rental._id);
 
-    console.log(rentalReturned);
     expect(rentalReturned.rentalFee).toBeGreaterThanOrEqual(
-      rentalReturned.rentalRate
+      rentalReturned.dailyRentalRate
     );
+  });
 
-    //work in progress
+  it("Should increase the movie Stock if input is valid", async () => {
+    await execute(server, customerId, movieId, token);
+
+    const movieInDb = await Movie.findById(movieId);
+
+    expect(movieInDb.numberInStock).toBe(movie.numberInStock + 1);
   });
 });

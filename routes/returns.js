@@ -6,6 +6,7 @@ const asyncMiddleware = require("../middleware/async");
 const { validateRental, Rental } = require("../models/rentals");
 const { isValidObjectId } = require("mongoose");
 const { date } = require("joi");
+const { Movie } = require("../models/movies");
 
 router.post(
   "/",
@@ -52,7 +53,10 @@ router.post(
 
     await returns.save();
 
-    console.log(returns);
+    await Movie.updateOne(
+      { _id: req.body.movieId },
+      { $inc: { numberInStock: 1 } }
+    );
 
     return res.status(200).send(returns);
   })
