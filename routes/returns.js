@@ -3,14 +3,30 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const asyncMiddleware = require("../middleware/async");
-const { validateRental, Rental } = require("../models/rentals");
-const { isValidObjectId } = require("mongoose");
-const { date } = require("joi");
+const { Rental } = require("../models/rentals");
 const { Movie } = require("../models/movies");
+const Joi = require("joi");
+
+function validateReturns(returns) {
+  const schema = Joi.object({
+    customerId: Joi.string().required(),
+    movieId: Joi.string().required(),
+  });
+
+  return schema.validate(returns);
+}
+
+const validate = (validator) => {
+  return (req, res, next) => {
+    const { error } = validator(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+    next();
+  };
+};
 
 router.post(
   "/",
-  auth,
+  [auth, validate(validateReturns)],
   asyncMiddleware(async (req, res) => {
     const calculateFee = (dateRented, dateReturned, rentalRate) => {
       const dateDifference = dateReturned - dateRented;
@@ -27,10 +43,6 @@ router.post(
 
       return rentalFee.toPrecision(4);
     };
-
-    if (!req.body.customerId)
-      return res.status(400).send("customerId is required");
-    if (!req.body.movieId) return res.status(400).send("movieId is required");
 
     let returns = await Rental.findOne({
       customerId: req.body.customerId,
