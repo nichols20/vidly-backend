@@ -6,6 +6,7 @@ const asyncMiddleware = require("../middleware/async");
 const { Rental } = require("../models/rentals");
 const { Movie } = require("../models/movies");
 const Joi = require("joi");
+const validate = require("../middleware/validate");
 
 function validateReturns(returns) {
   const schema = Joi.object({
@@ -15,14 +16,6 @@ function validateReturns(returns) {
 
   return schema.validate(returns);
 }
-
-const validate = (validator) => {
-  return (req, res, next) => {
-    const { error } = validator(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-    next();
-  };
-};
 
 router.post(
   "/",
