@@ -21,26 +21,7 @@ router.post(
   "/",
   [auth, validate(validateReturns)],
   asyncMiddleware(async (req, res) => {
-    const calculateFee = (dateRented, dateReturned, rentalRate) => {
-      const dateDifference = dateReturned - dateRented;
-      const rentalPeriod = dateDifference / (1000 * 3600 * 24);
-      let rentalFee = rentalPeriod * rentalRate;
-
-      try {
-        if (rentalFee < rentalRate) {
-          rentalFee = rentalRate;
-        }
-      } catch (ex) {
-        console.log(ex);
-      }
-
-      return rentalFee.toPrecision(4);
-    };
-
-    let returns = await Rental.findOne({
-      customerId: req.body.customerId,
-      movieId: req.body.movieId,
-    });
+    let returns = await Rental.lookUp(req.body.customerId, req.body.movieId);
 
     if (!returns)
       return res.status(404).send("Customer movie rental could not be found");
@@ -48,13 +29,7 @@ router.post(
     if (returns.dateReturned)
       return res.status(400).send("Rental Already returned");
 
-    returns.dateReturned = Date.now();
-
-    returns.rentalFee = calculateFee(
-      returns.dateOut,
-      returns.dateReturned,
-      returns.dailyRentalRate
-    );
+    returns.return();
 
     await returns.save();
 
@@ -63,7 +38,7 @@ router.post(
       { $inc: { numberInStock: 1 } }
     );
 
-    return res.status(200).send(returns);
+    return res.send(returns);
   })
 );
 
