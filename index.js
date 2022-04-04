@@ -10,6 +10,7 @@ require("express-async-errors");
 require("./startup/db")();
 require("./startup/routes")(app);
 require("./startup/config")();
+require("./startup/prod")(app);
 
 //Create a port object that will equal environemntal variabled if undefined set to 3000
 const port = process.env.PORT || 3000;
